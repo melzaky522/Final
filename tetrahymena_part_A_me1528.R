@@ -13,26 +13,24 @@ library(ggplot2)
 library("tidyverse")
 library("readr")
 
-#load the script the tsv file : Step 1
+#Step 1: load the script the tsv file
 mydata <- read_tsv("tetrahymena.tsv")
 View(mydata)
 
-#removing the rows which has diameter <= 19.2 : Step 2
+#Step 2: removing the rows which has diameter <= 19.2
 mydata <- mydata[!mydata$diameter <= 19.2,]
 
-#computing mean for culture grouping : step 3 
-test1 <- mydata[,2:4] %>% group_by(culture) %>% summarise_all(funs(mean(., na.rm=TRUE)))
+#Step 3: computing the mean for culture and glucose grouping, respectively
+meanCulture <- mydata[,2:4] %>% group_by(culture) %>% summarise_all(funs(mean(., na.rm=TRUE)))
 
-#computing mean for glucose grouping : Step 3
-test2 <- mydata %>% group_by(glucose) %>% summarise_all(funs(mean(., na.rm=TRUE)))
+meanGlucose <- mydata %>% group_by(glucose) %>% summarise_all(funs(mean(., na.rm=TRUE)))
 
-#adding new column for log_concentration  : Step 4
+#Step 4: adding new columns for log_concentration and log_diameter, respectively
 mydata$log_conc <- log(mydata$conc)
 
-#adding new column for log_diameter : Step 4
 mydata$log_diameter <- log(mydata$diameter)
 
-#doing scatter plot  : Step 5 and Step 6
+#Step 5 and 6: doing scatter plot using ggplot and geom_smooth to display the smooth line
 ggplot(mydata, aes(x=log_conc, y=log_diameter,shape=glucose,color=glucose)) + geom_point() + geom_smooth(method=lm, se=FALSE, fullrange=TRUE)
 
 #save the plot into PDF
